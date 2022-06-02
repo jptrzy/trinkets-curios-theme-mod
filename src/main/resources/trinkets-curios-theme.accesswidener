@@ -1,0 +1,9 @@
+accessWidener   v1   named
+
+mutable field   net/minecraft/screen/slot/Slot  x   I
+mutable field   net/minecraft/screen/slot/Slot  y   I
+accessible field   net/minecraft/screen/slot/Slot  index   I
+mutable field   net/minecraft/screen/slot/Slot  index   I
+
+extendable method net/minecraft/screen/ScreenHandler internalOnSlotClick (IILnet/minecraft/screen/slot/SlotActionType;Lnet/minecraft/entity/player/PlayerEntity;)V
+extendable method net/minecraft/client/gui/screen/ingame/HandledScreen drawSlot (Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/screen/slot/Slot;)V
