@@ -25,6 +25,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenMixin extends AbstractInventoryScreen<PlayerScreenHandler> implements RecipeBookProvider {
@@ -47,29 +48,36 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
         if(recipeBook.isOpen()) {
             this.trinketsShowButton.visible = false;
             this.trinketsHideButton.visible = false;
+            this.trinketsShowButton.active = false;
+            this.trinketsHideButton.active = false;
         }
     }
 
     protected void updateButtonsPos(){
-        this.trinketsShowButton.x = this.x+28;
-        this.trinketsHideButton.x = this.x+28;
+        this.trinketsShowButton.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth)+28;
+        this.trinketsHideButton.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth)+28;
         this.trinketsShowButton.y = this.y+10;
         this.trinketsHideButton.y = this.y+10;
     }
 
     @Unique private boolean lastOpen;
-    @Inject(method="onMouseClick", at = @At("HEAD"))
-    protected void H_onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci) {
+    @Inject(method="mouseClicked", at = @At("HEAD"))
+    public void H_mouseClick(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         lastOpen = recipeBook.isOpen();
+        Main.LOGGER.warn("TEST3 {} {}", lastOpen, recipeBook.isOpen());
     }
 
-    @Inject(method="onMouseClick", at = @At("TAIL"))
-    protected void T_onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci) {
+    @Inject(method="mouseClicked", at = @At("TAIL"))
+    public void T_mouseClick(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+        Main.LOGGER.warn("TEST2 {} {}", lastOpen, recipeBook.isOpen());
         if(lastOpen != recipeBook.isOpen()){
             if(recipeBook.isOpen()){
                 this.trinketsShowButton.visible = false;
                 this.trinketsHideButton.visible = false;
+                this.trinketsShowButton.active = false;
+                this.trinketsHideButton.active = false;
             }else{
+                Main.LOGGER.warn("TEST");
                 updateButtonsPos();
                 onClick(false);
             }
@@ -86,6 +94,8 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
         }
         (getTPC().getTrinketsShow()  ? trinketsShowButton : trinketsHideButton).visible = true;
         (getTPC().getTrinketsShow()  ? trinketsHideButton : trinketsShowButton).visible = false;
+        (getTPC().getTrinketsShow()  ? trinketsShowButton : trinketsHideButton).active = true;
+        (getTPC().getTrinketsShow()  ? trinketsHideButton : trinketsShowButton).active = false;
     }
 
     @Inject(at = @At("TAIL"), method = "drawBackground")
