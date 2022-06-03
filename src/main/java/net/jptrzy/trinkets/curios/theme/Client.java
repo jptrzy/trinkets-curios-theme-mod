@@ -40,12 +40,12 @@ public class Client implements ClientModInitializer {
 		}
 
 		//Corner
-		helper.drawTexture(matrices, x-24-width*9, y+9,      0, 26, 7, 7);
-		helper.drawTexture(matrices, x-24-width*9, y+18*height+16,      0, 51, 7, 7);
+		helper.drawTexture(matrices, x-6-width*18, y+9,      0, 26, 7, 7);
+		helper.drawTexture(matrices, x-6-width*18, y+18*height+16,      0, 51, 7, 7);
 
 		for (int i = 0; i < height; i++) {
 			//Left Outer Border
-			helper.drawTexture(matrices, x-24-width*9, y+18*i+16, 0, 33, 7, 18);
+			helper.drawTexture(matrices, x-6-width*18, y+18*i+16, 0, 33, 7, 18);
 		}
 
 		for (int i = 0; i < length; i++) {
@@ -53,9 +53,11 @@ public class Client implements ClientModInitializer {
 			helper.drawTexture(matrices, x-17-(i/7)*18, y+18*(i%7)+16, 4, 4, 18, 18);
 		}
 
-		RenderSystem.setShaderTexture(0, SOCIAL_INTERACTIONS_TEXTURE);
-		for (int i = length; i < width * 7; i++) {
-			DrawableHelper.drawTexture(matrices, x-17-(i/7)*18, y+18*(i%7)+16, 0, 32, 18, 18, 64, 64);
+		if(length > 7) {
+			RenderSystem.setShaderTexture(0, SOCIAL_INTERACTIONS_TEXTURE);
+			for (int i = length; i < width * 7; i++) {
+				DrawableHelper.drawTexture(matrices, x - 17 - (i / 7) * 18, y + 18 * (i % 7) + 16, 0, 32, 18, 18, 64, 64);
+			}
 		}
 	}
 }
