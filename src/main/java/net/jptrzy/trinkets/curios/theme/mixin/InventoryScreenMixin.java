@@ -64,12 +64,10 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     @Inject(method="mouseClicked", at = @At("HEAD"))
     public void H_mouseClick(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         lastOpen = recipeBook.isOpen();
-        Main.LOGGER.warn("TEST3 {} {}", lastOpen, recipeBook.isOpen());
     }
 
     @Inject(method="mouseClicked", at = @At("TAIL"))
     public void T_mouseClick(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
-        Main.LOGGER.warn("TEST2 {} {}", lastOpen, recipeBook.isOpen());
         if(lastOpen != recipeBook.isOpen()){
             if(recipeBook.isOpen()){
                 this.trinketsShowButton.visible = false;
@@ -77,7 +75,6 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
                 this.trinketsShowButton.active = false;
                 this.trinketsHideButton.active = false;
             }else{
-                Main.LOGGER.warn("TEST");
                 updateButtonsPos();
                 onClick(false);
             }

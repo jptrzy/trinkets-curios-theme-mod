@@ -30,25 +30,14 @@ public class SurvivalTrinketSlotMixin {
         alwaysVisible = true;
     }
 
-
-//    @Inject(at = @At("HEAD"), method = "isTrinketFocused", cancellable = true)
-//    public void isTrinketFocused(CallbackInfoReturnable<Boolean> ci) {
-//        ci.setReturnValue(true);
-//    }
-
     @Inject(method = "isEnabled", at = @At(value="INVOKE",target="Lnet/minecraft/client/MinecraftClient;getInstance()Lnet/minecraft/client/MinecraftClient;",shift=At.Shift.BEFORE), cancellable = true)
     public void isEnabled(CallbackInfoReturnable<Boolean> cir) {
-        Main.LOGGER.warn("EN 1");
         MinecraftClient client = MinecraftClient.getInstance();
         Screen s = client.currentScreen;
-        if(s instanceof InventoryScreen screen && screen.getRecipeBookWidget().isOpen() || s instanceof CreativeInventoryScreen){
-            Main.LOGGER.warn("EN 0");
+        if(s instanceof InventoryScreen screen) {
+            cir.setReturnValue(!screen.getRecipeBookWidget().isOpen() && ((TCTPlayerScreenHandlerInterface) screen.getScreenHandler()).getTrinketsShow());
+        } else if (s instanceof CreativeInventoryScreen) {
             cir.setReturnValue(false);
         }
-        if(s instanceof TCTPlayerScreenHandlerInterface tcp){
-            Main.LOGGER.warn("EN 2 {}", tcp.getTrinketsShow());
-            cir.setReturnValue(tcp.getTrinketsShow());
-        }
-        Main.LOGGER.warn("EN E");
     }
 }

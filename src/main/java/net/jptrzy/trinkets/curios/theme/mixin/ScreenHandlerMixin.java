@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(ScreenHandler.class)
-public abstract class PlayerScreenHandlerMixin implements TCTPlayerScreenHandlerInterface {
+public abstract class ScreenHandlerMixin implements TCTPlayerScreenHandlerInterface {
 
 
     @Unique
@@ -50,11 +50,6 @@ public abstract class PlayerScreenHandlerMixin implements TCTPlayerScreenHandler
         internalOnSlotClick(slotIndex, button, actionType, player);
     }
 
-//    @Inject(at = @At("RETURN"), method = "internalOnSlotClick", locals = LocalCapture.CAPTURE_FAILHARD)
-//    public void internalOnSlotClickR(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
-//        Main.LOGGER.warn("{}", actionType);
-//    }
-
     @Inject(at = @At("RETURN"), method = "addSlot", cancellable = true)
     public void addSlot(Slot slot, CallbackInfoReturnable<Slot> cir) {
         // Disable creative slots
@@ -68,11 +63,8 @@ public abstract class PlayerScreenHandlerMixin implements TCTPlayerScreenHandler
                 trinketSlotInd = 0;
             }
 
-//            slot.index = trinketSlotInd;
             slot.x = -16 - (trinketSlotInd/7) * 18;
             slot.y = 17 + (trinketSlotInd%7) * 18;
-
-//            helper.drawTexture(matrices, x-17-(i/7)*16, y+18*(i%7)+16, 0, 32, 18, 18, 64, 64);
 
             trinketSlotInd++;
         }
