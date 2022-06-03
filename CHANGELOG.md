@@ -6,4 +6,5 @@
 ## 0.1.1
 * 100% Client Side
 * Fix not working in not development mode
+* Remove old test trinkets slots
 
