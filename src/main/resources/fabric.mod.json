@@ -4,11 +4,14 @@
   "version": "${version}",
 
   "name": "Trinkets Curios Theme",
-  "description": "",
+  "description": "It make Trinkets mod look like Curios mod.",
   "authors": [
     "jptrzy"
   ],
-  "contact": {},
+  "contact": {
+    "sources": "https://github.com/jptrzy/trinkets-curios-theme-mod",
+    "issues": "https://github.com/jptrzy/trinkets-curios-theme-mod/issues"
+  },
 
   "license": "LGPL-3.0",
   "icon": "assets/trinkets-curios-theme/icon.png",
@@ -29,6 +32,6 @@
     "fabric": "*",
     "minecraft": "~1.18.2",
     "java": ">=17",
-    "trinkets" : "~3.3.1"
+    "trinkets" : ">=3.3.1"
   }
 }

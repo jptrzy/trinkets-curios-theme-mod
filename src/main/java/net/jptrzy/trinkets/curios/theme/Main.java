@@ -60,7 +60,7 @@ public class Main implements ModInitializer {
 
 		RenderSystem.setShaderTexture(0, SOCIAL_INTERACTIONS_TEXTURE);
 		for (int i = length; i < width * 7; i++) {
-			helper.drawTexture(matrices, x-17-(i/7)*18, y+18*(i%7)+16, 0, 32, 18, 18, 64, 64);
+			DrawableHelper.drawTexture(matrices, x-17-(i/7)*18, y+18*(i%7)+16, 0, 32, 18, 18, 64, 64);
 		}
 	}
 
