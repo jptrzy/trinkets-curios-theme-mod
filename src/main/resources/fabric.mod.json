@@ -18,8 +18,8 @@
 
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "net.jptrzy.trinkets.curios.theme.Main"
+    "client": [
+      "net.jptrzy.trinkets.curios.theme.Client"
     ]
   },
   "mixins": [
