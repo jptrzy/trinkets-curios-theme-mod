@@ -1,3 +1,8 @@
 {
+  "text.autoconfig.trinkets-curios-theme.title": "Trinkets Curios Motyw Opcje",
 
+  "text.autoconfig.trinkets-curios-theme.option.scrollbar": "Scrollbar",
+  "text.autoconfig.trinkets-curios-theme.option.scrolling_outside_boundary": "Skrolowanie poza granicami",
+
+  "text.autoconfig.trinkets-curios-theme.option.scrolling_outside_boundary.@Tooltip": "Skrolowanie w jakim kolwiek miejscu w ekwipunki."
 }
