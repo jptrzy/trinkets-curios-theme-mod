@@ -51,6 +51,8 @@ public class Client implements ClientModInitializer {
 	public static void drawbackground(DrawableHelper helper, int x, int y, MatrixStack matrices, TCTPlayerScreenHandlerInterface tcp) {
 		int length = tcp.getTrinketSlotInd();
 
+		y += 30;
+
 		RenderSystem.setShaderTexture(0, MORE_SLOTS);
 
 		int width = (int) Math.ceil(length / 7.0);

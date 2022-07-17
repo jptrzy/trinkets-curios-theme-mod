@@ -12,7 +12,6 @@ It make Trinkets mod look like Curios mod.
 
 ## 📅 TODO
 * Creative Inventory Support
-* Scrollbar
 * Optimisation
 
 # 📝 Requires
