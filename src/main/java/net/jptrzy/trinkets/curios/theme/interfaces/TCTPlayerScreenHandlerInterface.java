@@ -8,4 +8,7 @@ public interface TCTPlayerScreenHandlerInterface {
     Boolean getTrinketsShow();
     int getTrinketSlotStart();
     int getTrinketSlotInd();
+
+    int getScrollIndex();
+    void setScrollIndex(int index);
 }

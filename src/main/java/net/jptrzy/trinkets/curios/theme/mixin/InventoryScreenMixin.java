@@ -2,8 +2,10 @@ package net.jptrzy.trinkets.curios.theme.mixin;
 
 import dev.emi.trinkets.TrinketSlot;
 import net.jptrzy.trinkets.curios.theme.Client;
+import net.jptrzy.trinkets.curios.theme.config.ModConfig;
 import net.jptrzy.trinkets.curios.theme.interfaces.TCTPlayerScreenHandlerInterface;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
+import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
@@ -12,6 +14,7 @@ import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,6 +26,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenMixin extends AbstractInventoryScreen<PlayerScreenHandler> implements RecipeBookProvider {
+
+    @Unique private float scrollPosition;
+    @Unique private boolean scrolling;
 
     @Unique protected TexturedButtonWidget trinketsShowButton;
     @Unique protected TexturedButtonWidget trinketsHideButton;
@@ -45,6 +51,8 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
             this.trinketsShowButton.active = false;
             this.trinketsHideButton.active = false;
         }
+
+        Client.updateScrollbar(handler.slots, getTPC(), 0f);
     }
 
     protected void updateButtonsPos(){
@@ -92,7 +100,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     @Inject(at = @At("TAIL"), method = "drawBackground")
     private void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY, CallbackInfo ci) {
         if(!recipeBook.isOpen() && getTPC().getTrinketsShow()){
-            Client.drawbackground(this, this.x, this.y, matrices, getTPC().getTrinketSlotInd());
+            Client.drawbackground(this, this.x, this.y, matrices, getTPC());
         }
     }
 
@@ -104,6 +112,16 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     protected void drawSlot(MatrixStack matrices, Slot slot) {
         if(!recipeBook.isOpen() && getTPC().getTrinketsShow() || !(slot instanceof TrinketSlot)){
             super.drawSlot(matrices, slot);
+        }
+    }
+
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        if (!ModConfig.scrollbar || recipeBook.isOpen() || !getTPC().getTrinketsShow()) {
+            return false;
+        } else {
+            Client.updateScrollbar(this.handler.slots, getTPC(), amount);
+
+            return true;
         }
     }
 }

@@ -1,6 +1,7 @@
 package net.jptrzy.trinkets.curios.theme.mixin;
 
 import dev.emi.trinkets.TrinketSlot;
+import net.jptrzy.trinkets.curios.theme.Client;
 import net.jptrzy.trinkets.curios.theme.interfaces.TCTPlayerScreenHandlerInterface;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -21,16 +22,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ScreenHandlerMixin implements TCTPlayerScreenHandlerInterface {
 
 
-    @Unique
-    protected int trinketSlotStart = -1;
-    @Unique
-    public int trinketSlotInd = 0;
+    @Unique protected int trinketSlotStart = -1;
+    @Unique public int trinketSlotInd = 0;
+
+    @Unique public int scrollbarIndex = 0;
 
     @Unique public Boolean trinketsShow = true;
 
-    @Final
-    @Shadow
-    public DefaultedList<Slot> slots;
+    @Final @Shadow public DefaultedList<Slot> slots;
 
     @Shadow
     public abstract void internalOnSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player);
@@ -60,6 +59,8 @@ public abstract class ScreenHandlerMixin implements TCTPlayerScreenHandlerInterf
             slot.y = 17 + (trinketSlotInd%7) * 18;
 
             trinketSlotInd++;
+
+            Client.updateScrollbar(this.slots, this, 0F);
         }
 
         cir.setReturnValue(slot);
@@ -80,5 +81,12 @@ public abstract class ScreenHandlerMixin implements TCTPlayerScreenHandlerInterf
     }
     @Override public int getTrinketSlotInd(){
         return this.trinketSlotInd;
+    }
+
+    @Override public int getScrollIndex(){
+        return this.scrollbarIndex;
+    }
+    @Override public void setScrollIndex(int index){
+        this.scrollbarIndex = index;
     }
 }
