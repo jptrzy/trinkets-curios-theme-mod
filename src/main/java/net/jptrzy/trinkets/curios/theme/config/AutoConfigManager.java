@@ -37,6 +37,7 @@ public class AutoConfigManager {
         Client.LOGGER.info("Reload Config");
 
         ModConfig.scrollbar = data.scrollbar;
+        ModConfig.scrolling_outside_boundary = data.scrolling_outside_boundary;
 
         return ActionResult.SUCCESS;
     }

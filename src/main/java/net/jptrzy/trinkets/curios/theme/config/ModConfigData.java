@@ -9,4 +9,7 @@ import net.jptrzy.trinkets.curios.theme.Client;
 public class ModConfigData implements ConfigData {
 //    @ConfigEntry.Category("Client")
     public boolean scrollbar = true;
+    @ConfigEntry.Gui.Tooltip
+    public boolean scrolling_outside_boundary = false;
+
 }

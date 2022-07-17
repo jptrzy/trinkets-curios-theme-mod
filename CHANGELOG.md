@@ -11,3 +11,7 @@
 * Fix Resizing
 * Remove old test trinkets slots
 
+## 0.2.0
+* Scrollbar
+* Config Screen / Settings
+

@@ -1,5 +1,8 @@
 {
   "text.autoconfig.trinkets-curios-theme.title": "Trinkets Curios Theme Options",
 
-  "text.autoconfig.trinkets-curios-theme.option.scrollbar": "Scrollbar"
+  "text.autoconfig.trinkets-curios-theme.option.scrollbar": "Scrollbar",
+  "text.autoconfig.trinkets-curios-theme.option.scrolling_outside_boundary": "Scrolling Outside Boundary",
+  
+  "text.autoconfig.trinkets-curios-theme.option.scrolling_outside_boundary.@Tooltip": "Scrolling in any location in inventory."
 }

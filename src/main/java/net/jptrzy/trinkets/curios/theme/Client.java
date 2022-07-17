@@ -94,7 +94,7 @@ public class Client implements ClientModInitializer {
 		if (ModConfig.scrollbar && length > 7) {
 			for (int i = 0; i < height; i++) {
 				//Left Outer Border
-				DrawableHelper.drawTexture(matrices, x - 8 - 18, y + 16 + i * 18, 19, 35, 9, 18, 64, 64);
+				DrawableHelper.drawTexture(matrices, x - 26, y + 16 + i * 18, 19, 35, 9, 18, 64, 64);
 			}
 
 			//Corner
@@ -153,5 +153,21 @@ public class Client implements ClientModInitializer {
 
 
 		 tcp.setScrollIndex(index);
+	}
+
+	public static boolean isClickInScrollbar(double mouseX, double mouseY, int x, int y) {
+		int k = x - 21;
+		int l = y + 16;
+		int m = k + 6;
+		int n = l + 126;
+		return mouseX >= (double)k && mouseY >= (double)l && mouseX < (double)m && mouseY < (double)n;
+	}
+
+	public static boolean isScrolledInTrinkets(double mouseX, double mouseY, int x, int y) {
+		int k = x - 26;
+		int l = y + 10;
+		int m = k + 27;
+		int n = l + 140;
+		return (mouseX >= (double)k && mouseY >= (double)l && mouseX < (double)m && mouseY < (double)n) || ModConfig.scrolling_outside_boundary;
 	}
 }

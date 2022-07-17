@@ -5,13 +5,13 @@ import net.jptrzy.trinkets.curios.theme.Client;
 import net.jptrzy.trinkets.curios.theme.config.ModConfig;
 import net.jptrzy.trinkets.curios.theme.interfaces.TCTPlayerScreenHandlerInterface;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.math.MathHelper;
@@ -27,7 +27,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenMixin extends AbstractInventoryScreen<PlayerScreenHandler> implements RecipeBookProvider {
 
-    @Unique private float scrollPosition;
     @Unique private boolean scrolling;
 
     @Unique protected TexturedButtonWidget trinketsShowButton;
@@ -116,12 +115,38 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     }
 
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        if (!ModConfig.scrollbar || recipeBook.isOpen() || !getTPC().getTrinketsShow()) {
+        if (!ModConfig.scrollbar || recipeBook.isOpen() || !getTPC().getTrinketsShow() || !Client.isScrolledInTrinkets(mouseX, mouseY, this.x, this.y) ) {
             return false;
         } else {
             Client.updateScrollbar(this.handler.slots, getTPC(), amount);
 
             return true;
+        }
+    }
+
+    @Inject(at = @At("HEAD"), method = "mouseClicked")
+    public void mouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+        if (ModConfig.scrollbar && getTPC().getTrinketsShow() && Client.isClickInScrollbar(mouseX, mouseY, this.x, this.y)) {
+            this.scrolling = true;
+        }
+    }
+
+    @Inject(at = @At("HEAD"), method = "mouseReleased")
+    public void mouseReleased(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+        scrolling = false;
+    }
+
+    @Override public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        int l = getTPC().getTrinketSlotInd() - 7;
+        if (this.scrolling && l > 0) {
+            int i = this.y + 18;
+            int j = i + 126;
+            float scrollPosition = ((float)mouseY - (float)i - 7.5F) / ((float)(j - i) - 15.0F);
+            getTPC().setScrollIndex(MathHelper.clamp( (int) (scrollPosition * l), 0, l) );
+            Client.updateScrollbar(this.handler.slots, getTPC(), 0);
+            return true;
+        }else {
+            return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
         }
     }
 }
