@@ -20,6 +20,9 @@
   "entrypoints": {
     "client": [
       "net.jptrzy.trinkets.curios.theme.Client"
+    ],
+    "modmenu": [
+      "net.jptrzy.trinkets.curios.theme.integrations.ModMenuConfig"
     ]
   },
   "mixins": [
