@@ -16,5 +16,10 @@ It make Trinkets mod look like Curios mod.
 * Optimisation
 
 # 📝 Requires
-* [Fabric API](https://modrinth.com/mod/fabric-api)
-* [Trinkets](https://modrinth.com/mod/trinkets)
+* [Fabric API](https://modrinth.com/mod/P7dR8mSH)
+* [Trinkets](https://modrinth.com/mod/5aaWibi9)
+
+# Integrations (Optional)
+* [ClothConfig2](https://modrinth.com/mod/9s6osm5g)
+* [ModMenu](https://modrinth.com/mod/mOgUt4GM)
+* 
