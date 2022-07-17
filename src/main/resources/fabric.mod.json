@@ -36,5 +36,10 @@
     "minecraft": "~1.19",
     "java": ">=17",
     "trinkets" : ">=3.4.0"
+  },
+  "recommends": {
+    "scout" : "*",
+    "modmenu" : "*",
+    "cloth-config2" : "*"
   }
 }

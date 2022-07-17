@@ -2,6 +2,7 @@ package net.jptrzy.trinkets.curios.theme.mixin;
 
 import dev.emi.trinkets.TrinketSlot;
 import net.jptrzy.trinkets.curios.theme.Client;
+import net.jptrzy.trinkets.curios.theme.config.ModConfig;
 import net.jptrzy.trinkets.curios.theme.interfaces.TCTPlayerScreenHandlerInterface;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -55,11 +56,12 @@ public abstract class ScreenHandlerMixin implements TCTPlayerScreenHandlerInterf
                 trinketSlotInd = 0;
             }
 
-            slot.x = -16 - (trinketSlotInd/7) * 18;
-            slot.y = 17 + (trinketSlotInd%7) * 18;
+            slot.x = -16 - (trinketSlotInd/ModConfig.max_height) * 18;
+            slot.y = 17 + (trinketSlotInd%ModConfig.max_height) * 18;
 
             trinketSlotInd++;
 
+            // TODO update it somewhere else, because it courses problems with index
             Client.updateScrollbar(this.slots, this, 0F);
         }
 

@@ -39,6 +39,16 @@ public class AutoConfigManager {
         ModConfig.scrollbar = data.scrollbar;
         ModConfig.scrolling_outside_boundary = data.scrolling_outside_boundary;
 
+        ModConfig.scout_auto_resize = data.scout_auto_resize;
+
+        if (Client.isScoutLoaded() && ModConfig.scout_auto_resize) {
+            ModConfig.max_height = 3;
+            ModConfig.min_width = 2;
+        } else {
+            ModConfig.max_height = data.max_height;
+            ModConfig.min_width = data.min_width;
+        }
+
         return ActionResult.SUCCESS;
     }
 }

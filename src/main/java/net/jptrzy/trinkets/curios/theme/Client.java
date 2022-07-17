@@ -11,6 +11,7 @@ import net.jptrzy.trinkets.curios.theme.interfaces.TCTSurvivalTrinketSlot;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
@@ -38,6 +39,11 @@ public class Client implements ClientModInitializer {
 		if(Client.isClothConfigLoaded()){
 			AutoConfigManager.setup();
 		}
+
+		if (Client.isScoutLoaded()) {
+			ModConfig.max_height = 3;
+			ModConfig.min_width = 2;
+		}
 	}
 
 	public static boolean isModLoaded(String modID) {
@@ -48,18 +54,20 @@ public class Client implements ClientModInitializer {
 		return isModLoaded("cloth-config2");
 	}
 
+	public static boolean isScoutLoaded() {
+		return isModLoaded("scout");
+	}
+
 	public static void drawbackground(DrawableHelper helper, int x, int y, MatrixStack matrices, TCTPlayerScreenHandlerInterface tcp) {
 		int length = tcp.getTrinketSlotInd();
 
-		y += 30;
-
 		RenderSystem.setShaderTexture(0, MORE_SLOTS);
 
-		int width = (int) Math.ceil(length / 7.0);
+		int width = (int) Math.ceil(length / (float) ModConfig.max_height);
 		if (ModConfig.scrollbar) {
-			width = 1;
+			width = ModConfig.min_width;
 		}
-		int height = Math.min(length, 7);
+		int height = Math.min(length, ModConfig.max_height);
 
 		for (int i = 0; i < width; i++) {
 			//Top && Bottom
@@ -69,13 +77,21 @@ public class Client implements ClientModInitializer {
 
 		for (int i = 0; i < length; i++) {
 			//Inner border around each slot
-			if (width == 1 && i >= 7) {
+			if (width == 1 && i >= ModConfig.max_height) {
 				break;
 			}
-			helper.drawTexture(matrices, x - 17 - (i / 7) * 18, y + 18 * (i % 7) + 16, 4, 4, 18, 18);
+
+			if (isScrollbarVisable(length)) {
+				if (i >= ModConfig.min_width*ModConfig.max_height) {
+					break;
+				}
+				helper.drawTexture(matrices, x - 17 - (i % ModConfig.min_width) * 18, y + 18 * (i / ModConfig.min_width) + 16, 4, 4, 18, 18);
+			} else {
+				helper.drawTexture(matrices, x - 17 - (i / ModConfig.max_height) * 18, y + 18 * (i % ModConfig.max_height) + 16, 4, 4, 18, 18);
+			}
 		}
 
-		if (! (ModConfig.scrollbar && length > 7) ) {
+		if (!isScrollbarVisable(length)) {
 			for (int i = 0; i < height; i++) {
 				//Left Outer Border
 				helper.drawTexture(matrices, x - 6 - width * 18, y + 18 * i + 16, 0, 33, 7, 18);
@@ -86,17 +102,23 @@ public class Client implements ClientModInitializer {
 			helper.drawTexture(matrices, x - 6 - width * 18, y + 18 * height + 16, 0, 51, 7, 7);
 		}
 
-		if(length > 7 ) {
-			RenderSystem.setShaderTexture(0, SOCIAL_INTERACTIONS_TEXTURE);
-			for (int i = length; i < width * 7; i++) {
-				DrawableHelper.drawTexture(matrices, x - 17 - (i / 7) * 18, y + 18 * (i % 7) + 16, 0, 32, 18, 18, 64, 64);
+		RenderSystem.setShaderTexture(0, SOCIAL_INTERACTIONS_TEXTURE);
+
+		if(length > ModConfig.max_height) {
+			for (int i = length - tcp.getScrollIndex() * width; i < width * ModConfig.max_height; i++) {
+
+				if (isScrollbarVisable(length)) {
+					DrawableHelper.drawTexture(matrices, x - 17 - (i % ModConfig.min_width) * 18, y + 18 * (i / ModConfig.min_width) + 16, 0, 32, 18, 18, 64, 64);
+				} else {
+					DrawableHelper.drawTexture(matrices, x - 17 - (i / ModConfig.max_height) * 18, y + 18 * (i % ModConfig.max_height) + 16, 0, 32, 18, 18, 64, 64);
+				}
 			}
 		}
 
-		if (ModConfig.scrollbar && length > 7) {
+		if (isScrollbarVisable(length)) {
 			for (int i = 0; i < height; i++) {
 				//Left Outer Border
-				DrawableHelper.drawTexture(matrices, x - 26, y + 16 + i * 18, 19, 35, 9, 18, 64, 64);
+				DrawableHelper.drawTexture(matrices, x - 8 - width * 18, y + 16 + i * 18, 19, 35, 9, 18, 64, 64);
 			}
 
 			//Corner
@@ -104,21 +126,15 @@ public class Client implements ClientModInitializer {
 			DrawableHelper.drawTexture(matrices, x - 8 - width * 18, y + 18 * height + 16, 19, 53, 9, 7, 64, 64);
 
 			//Scrollbar
-			double amount = (height - 1) * 18 * ((double) tcp.getScrollIndex() / (tcp.getTrinketSlotInd()-7));
-			DrawableHelper.drawTexture(matrices, x - 6 - 18 + 2, y + 16 + (int) amount, 28, 35, 4, 18, 64, 64);
+			double amount = (height - 1) * 18 * ((double) tcp.getScrollIndex() /
+					(MathHelper.ceil((float) tcp.getTrinketSlotInd()
+							/ ModConfig.min_width) - ModConfig.max_height));
+			DrawableHelper.drawTexture(matrices, x - 6 - 18 * width + 2, y + 16 + (int) amount, 28, 35, 4, 18, 64, 64);
 		}
 
 	}
 
 	public static void updateScrollbar(DefaultedList<Slot> slots, TCTPlayerScreenHandlerInterface tcp, double amount){
-
-		int l = tcp.getTrinketSlotInd() - 7;
-		if(l <= 0){
-			return;
-		}
-
-		int index =  MathHelper.clamp(tcp.getScrollIndex() - (int) amount, 0, l);
-		tcp.setScrollIndex(index);
 
 		//Reload position on config change
 		if(!ModConfig.scrollbar){
@@ -129,47 +145,62 @@ public class Client implements ClientModInitializer {
 				}
 				Slot slot = slots.get(tcp.getTrinketSlotStart() - 1 + i);
 
-				slot.x = -16 - (i/7) * 18;
-				slot.y = 17 + (i%7) * 18;
+				slot.x = -16 - (i/ModConfig.max_height) * 18;
+				slot.y = 17 + (i%ModConfig.max_height) * 18;
 
 				((TCTSurvivalTrinketSlot) slot).setEnabled(true);
 			}
-			return;
+		}else {
+			int l = MathHelper.ceil((float) tcp.getTrinketSlotInd() / ModConfig.min_width) - ModConfig.max_height;
+			if(l <= 0){
+				return;
+			}
+
+			int index =  MathHelper.clamp(tcp.getScrollIndex() - (int) amount, 0, l);
+			tcp.setScrollIndex(index);
+			index = index * ModConfig.min_width;
+
+			for (int i=0; i<tcp.getTrinketSlotInd(); i++) {
+				if (slots.size() <= tcp.getTrinketSlotStart() - 1 + i) {
+					LOGGER.error("WIT");
+					continue;
+				}
+				Slot slot = slots.get(tcp.getTrinketSlotStart() - 1 + i);
+
+				if (i >= index && i < index + ModConfig.max_height * ModConfig.min_width) {
+					((TCTSurvivalTrinketSlot) slot).setEnabled(true);
+					slot.x = -16 - ((i-index)%ModConfig.min_width) * 18;
+					slot.y = 17 + ((i-index)/ModConfig.min_width) * 18;
+				}else{
+					((TCTSurvivalTrinketSlot) slot).setEnabled(false);
+				}
+			}
 		}
-
-		 for (int i=0; i<tcp.getTrinketSlotInd(); i++) {
-			 if (slots.size() <= tcp.getTrinketSlotStart() - 1 + i) {
-				 LOGGER.error("WIT");
-				 continue;
-			 }
-			 Slot slot = slots.get(tcp.getTrinketSlotStart() - 1 + i);
-
-			 if (i >= index && i < index + 7) {
-				 ((TCTSurvivalTrinketSlot) slot).setEnabled(true);
-				 slot.x = -16 - ((i-index)/7) * 18;
-				 slot.y = 17 + ((i-index)%7) * 18;
-			 }else{
-				 ((TCTSurvivalTrinketSlot) slot).setEnabled(false);
-			 }
-		 }
-
-
-		 tcp.setScrollIndex(index);
+//
+//		 LOGGER.warn("UPDATE");
 	}
 
-	public static boolean isClickInScrollbar(double mouseX, double mouseY, int x, int y) {
-		int k = x - 21;
-		int l = y + 16;
-		int m = k + 6;
-		int n = l + 126;
-		return mouseX >= (double)k && mouseY >= (double)l && mouseX < (double)m && mouseY < (double)n;
+	public static boolean isClickInScrollbar(TCTPlayerScreenHandlerInterface tcp, double mouseX, double mouseY, int x, int y) {
+		int h = MathHelper.ceil((float) tcp.getTrinketSlotInd() / ModConfig.min_width)
+				- ModConfig.max_height > 0 ? ModConfig.max_height : tcp.getTrinketSlotInd();
+		x -= 3 + 18 * ModConfig.min_width;
+		y += 16;
+		int xx = x + 6;
+		int yy = y + 18 * h;
+
+		return mouseX >= (double)x && mouseY >= (double)y && mouseX < (double)xx && mouseY < (double)yy;
 	}
 
-	public static boolean isScrolledInTrinkets(double mouseX, double mouseY, int x, int y) {
-		int k = x - 26;
-		int l = y + 10;
-		int m = k + 27;
-		int n = l + 140;
-		return (mouseX >= (double)k && mouseY >= (double)l && mouseX < (double)m && mouseY < (double)n) || ModConfig.scrolling_outside_boundary;
+	public static boolean isScrolledInTrinkets(TCTPlayerScreenHandlerInterface tcp, double mouseX, double mouseY, int x, int y) {
+		int h = MathHelper.ceil((float) tcp.getTrinketSlotInd() / ModConfig.min_width)
+				- ModConfig.max_height > 0 ? ModConfig.max_height : tcp.getTrinketSlotInd();
+		x -= 8 + 18 * ModConfig.min_width ;
+		y += 10;
+		int xx = x + 9 + 18 * ModConfig.min_width;
+		int yy = y + 14 + 18 * h;
+		return (mouseX >= (double)x && mouseY >= (double)y && mouseX < (double)xx && mouseY < (double)yy) || ModConfig.scrolling_outside_boundary;
+	}
+	public static boolean isScrollbarVisable(int length){
+		return ModConfig.scrollbar &&  MathHelper.ceil((float) length / ModConfig.min_width) > ModConfig.max_height;
 	}
 }

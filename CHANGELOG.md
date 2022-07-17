@@ -14,4 +14,5 @@
 ## 0.2.0
 * Scrollbar
 * Config Screen / Settings
+* Scout & ModMenu Integrations
 

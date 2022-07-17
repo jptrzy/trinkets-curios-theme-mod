@@ -21,3 +21,4 @@ It make Trinkets mod look like Curios mod.
 # Integrations (Optional)
 * [ClothConfig2](https://modrinth.com/mod/9s6osm5g)
 * [ModMenu](https://modrinth.com/mod/mOgUt4GM)
+* [Scout](https://modrinth.com/mod/QRYqnI15)

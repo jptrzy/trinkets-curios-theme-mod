@@ -89,6 +89,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     protected void onClick(boolean change){
         if(change){
             getTPC().setTrinketsShow(!getTPC().getTrinketsShow());
+//            Client.updateScrollbar(handler.slots, getTPC(), 0);
         }
         (getTPC().getTrinketsShow()  ? trinketsShowButton : trinketsHideButton).visible = true;
         (getTPC().getTrinketsShow()  ? trinketsHideButton : trinketsShowButton).visible = false;
@@ -115,7 +116,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     }
 
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        if (!ModConfig.scrollbar || recipeBook.isOpen() || !getTPC().getTrinketsShow() || !Client.isScrolledInTrinkets(mouseX, mouseY, this.x, this.y) ) {
+        if (!ModConfig.scrollbar || recipeBook.isOpen() || !getTPC().getTrinketsShow() || !Client.isScrolledInTrinkets(getTPC(), mouseX, mouseY, this.x, this.y) ) {
             return false;
         } else {
             Client.updateScrollbar(this.handler.slots, getTPC(), amount);
@@ -126,7 +127,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
 
     @Inject(at = @At("HEAD"), method = "mouseClicked")
     public void mouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
-        if (ModConfig.scrollbar && getTPC().getTrinketsShow() && Client.isClickInScrollbar(mouseX, mouseY, this.x, this.y)) {
+        if (ModConfig.scrollbar && getTPC().getTrinketsShow() && Client.isClickInScrollbar(getTPC(), mouseX, mouseY, this.x, this.y)) {
             this.scrolling = true;
         }
     }
@@ -137,10 +138,12 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     }
 
     @Override public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        int l = getTPC().getTrinketSlotInd() - 7;
+        int l = MathHelper.ceil((float) getTPC().getTrinketSlotInd() / ModConfig.min_width) - ModConfig.max_height;
         if (this.scrolling && l > 0) {
+            int h = MathHelper.ceil((float) getTPC().getTrinketSlotInd() / ModConfig.min_width)
+                    - ModConfig.max_height > 0 ? ModConfig.max_height : getTPC().getTrinketSlotInd();
             int i = this.y + 18;
-            int j = i + 126;
+            int j = i + 18*h;
             float scrollPosition = ((float)mouseY - (float)i - 7.5F) / ((float)(j - i) - 15.0F);
             getTPC().setScrollIndex(MathHelper.clamp( (int) (scrollPosition * l), 0, l) );
             Client.updateScrollbar(this.handler.slots, getTPC(), 0);
