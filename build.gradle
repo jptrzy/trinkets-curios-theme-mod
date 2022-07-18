@@ -61,23 +61,25 @@ dependencies {
 	}
 
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-	modCompileOnly "curse.maven:inventorio-491073:${project.inventorio_cf_version_id}"
+//	modCompileOnly "curse.maven:inventorio-491073:${project.inventorio_cf_version_id}"
 	modCompileOnly "curse.maven:scout-631922:${project.scout_cf_version_id}"
 
 
 	// IMGUI
+
+//	if ( Boolean.getBoolean("debug") ) { // -Ddebug=true
 	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
 	['', '-opengl', '-glfw'].each {
 		implementation "org.lwjgl:lwjgl$it:$lwjglVersion"
-//		implementation "org.lwjgl:lwjgl$it::natives-windows"
+//			implementation "org.lwjgl:lwjgl$it::natives-windows"
 		implementation "org.lwjgl:lwjgl$it::natives-linux"
 	}
 
 	implementation "io.github.spair:imgui-java-binding:$imguiVersion"
 	implementation "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
 
-//	implementation "io.github.spair:imgui-java-natives-windows:$imguiVersion"
+//		implementation "io.github.spair:imgui-java-natives-windows:$imguiVersion"
 	implementation "io.github.spair:imgui-java-natives-linux:$imguiVersion"
 
 

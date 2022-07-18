@@ -6,21 +6,15 @@ import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
-import imgui.type.ImString;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.jptrzy.trinkets.curios.theme.config.ModConfig;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
 
-import java.util.*;
+import java.util.Objects;
 
-@Environment(EnvType.CLIENT)
-public class ImguiScreen extends Screen {
+public class ImGuiManager {
 
-    private long windowPtr;
+    long windowPtr = -1;
 
     private final ImGuiImplGlfw implGlfw = new ImGuiImplGlfw();
 
@@ -28,8 +22,7 @@ public class ImguiScreen extends Screen {
 
     private final ImGuiIO io;
 
-    public ImguiScreen() {
-        super(Text.literal("ImguiScreen"));
+    public ImGuiManager(){
         windowPtr = MinecraftClient.getInstance().getWindow().getHandle();
         ImGui.createContext();
         io = ImGui.getIO();
@@ -37,56 +30,32 @@ public class ImguiScreen extends Screen {
         implGl3.init("#version 330");
     }
 
-    @Override
-    public boolean shouldPause() {
-        return false;
-    }
-
-    @Override
     public boolean charTyped(char chr, int keyCode) {
         if (io.getWantTextInput()) {
             io.addInputCharacter(chr);
         }
-        super.charTyped(chr, keyCode);
         return true;
     }
-
-    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (io.getWantCaptureKeyboard()) {
             if (io.getKeysDown(keyCode)) {
-                io.setKeysDown(new boolean[] { true });
+                io.setKeysDown(new boolean[]{ true });
             }
         }
-
-        Client.LOGGER.warn("PRESSED {}", Client.toggleGuiKeybind.isPressed());
-
-        if (Client.toggleGuiKeybind.isPressed()) {
-            this.close();
-        }
-
-        super.keyPressed(keyCode, scanCode, modifiers);
         return true;
     }
-
-    @Override public void close() {
-        implGl3.dispose();
-        implGlfw.dispose();
-
-        super.close();
-    }
-
-
-    @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         if (io.getWantCaptureKeyboard()) {
             if (io.getKeysDown(keyCode)) {
                 io.setKeysDown(new boolean[] { false });
             }
         }
-
-        super.keyReleased(keyCode, scanCode, modifiers);
         return true;
+    }
+
+    public void close() {
+        implGl3.dispose();
+        implGlfw.dispose();
     }
 
     ImBoolean always_update = new ImBoolean(ModConfig.always_update);
@@ -99,7 +68,6 @@ public class ImguiScreen extends Screen {
 
     ImBoolean scout_auto_resize = new ImBoolean(ModConfig.scout_auto_resize);
 
-    @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         // TODO Auto-generated method stub
         implGlfw.newFrame();
@@ -114,21 +82,6 @@ public class ImguiScreen extends Screen {
             ModConfig.min_width = min_width.get();
         }
 
-
-
-
-
-//        ImGui.text("hello");
-////        ImGui.inputText("Sample", msg);
-//        ImGui.end();
-//
-//        I
-//        ImGui.text("hello");
-////        ImGui.inputText("Sample", msg);
-//        ImGui.inputInt("Min Width", );
-//        if (ImGui.button("Save")) {
-//            Client.LOGGER.warn("TEST");
-//        }
         ImGui.end();
 
         ImGui.render();

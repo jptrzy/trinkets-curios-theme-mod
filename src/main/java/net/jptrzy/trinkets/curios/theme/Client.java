@@ -1,40 +1,22 @@
 package net.jptrzy.trinkets.curios.theme;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.emi.trinkets.api.TrinketInventory;
-import dev.emi.trinkets.api.TrinketsApi;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.jptrzy.trinkets.curios.theme.config.AutoConfigManager;
 import net.jptrzy.trinkets.curios.theme.config.ModConfig;
-import net.jptrzy.trinkets.curios.theme.integrations.ScoutUtils;
 import net.jptrzy.trinkets.curios.theme.interfaces.TCTPlayerScreenHandlerInterface;
 import net.jptrzy.trinkets.curios.theme.interfaces.TCTSurvivalTrinketSlot;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-
-import static java.lang.Math.min;
 
 public class Client implements ClientModInitializer {
 	public static final String MOD_ID = "trinkets-curios-theme";
@@ -42,6 +24,10 @@ public class Client implements ClientModInitializer {
 
 	public static final Identifier MORE_SLOTS = new Identifier("trinkets", "textures/gui/more_slots.png");
 	public static final Identifier SOCIAL_INTERACTIONS_TEXTURE = new Identifier(Client.MOD_ID, "textures/gui/curios.png");
+
+	public static void check(HandledScreen h) {
+		Client.LOGGER.warn("Check {}", h instanceof InventoryScreen);
+	}
 
 	@Override
 	public void onInitializeClient() {
@@ -52,22 +38,6 @@ public class Client implements ClientModInitializer {
 		if(Client.isClothConfigLoaded()){
 			AutoConfigManager.setup();
 		}
-
-		InitializeKeybinds();
-	}
-
-	public static KeyBinding toggleGuiKeybind;
-	private void InitializeKeybinds() {
-		toggleGuiKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.imguiexample.togglegui", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "key.imguiexample.utility"));
-
-		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			while (toggleGuiKeybind.wasPressed()) {
-				if (MinecraftClient.getInstance().player != null
-						&& MinecraftClient.getInstance().currentScreen == null) {
-					MinecraftClient.getInstance().setScreen(new ImguiScreen());
-				}
-			}
-		});
 	}
 
 	public static boolean isModLoaded(String modID) {
@@ -84,6 +54,8 @@ public class Client implements ClientModInitializer {
 
 	public static void drawbackground(DrawableHelper helper, int x, int y, MatrixStack matrices, TCTPlayerScreenHandlerInterface tcp) {
 		int length = tcp.getTrinketSlotInd();
+
+//		LOGGER.warn("length {}", length);
 
 		RenderSystem.setShaderTexture(0, MORE_SLOTS);
 
@@ -130,13 +102,8 @@ public class Client implements ClientModInitializer {
 		RenderSystem.setShaderTexture(0, SOCIAL_INTERACTIONS_TEXTURE);
 
 		if(length > ModConfig.max_height) {
-			for (int i = length - tcp.getScrollIndex() * width; i < width * ModConfig.max_height; i++) {
-
-				if (!isScrollbarVisable(length)) {
-					DrawableHelper.drawTexture(matrices, x - 17 - (i % ModConfig.min_width) * 18, y + 18 * (i / ModConfig.min_width) + 16, 0, 32, 18, 18, 64, 64);
-				} else {
-					DrawableHelper.drawTexture(matrices, x - 17 - (i / ModConfig.max_height) * 18, y + 18 * (i % ModConfig.max_height) + 16, 0, 32, 18, 18, 64, 64);
-				}
+			for (int i = 0; i < width * ModConfig.max_height; i++) {
+				DrawableHelper.drawTexture(matrices, x - 17 - (i % ModConfig.min_width) * 18, y + 18 * (i / ModConfig.min_width) + 16, 0, 32, 18, 18, 64, 64);
 			}
 		}
 

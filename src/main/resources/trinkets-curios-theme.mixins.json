@@ -5,12 +5,15 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "CreativeTrinketSlotMixin",
-    "InventoryScreenMixin",
     "ScreenHandlerMixin",
     "SurvivalTrinketSlotMixin",
     "TrinketScreenManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+    "HandledScreenMixin",
+    "ScreenDebugMode"
+  ]
 }

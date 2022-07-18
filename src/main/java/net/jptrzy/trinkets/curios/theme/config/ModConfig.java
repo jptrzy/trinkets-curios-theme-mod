@@ -1,6 +1,10 @@
 package net.jptrzy.trinkets.curios.theme.config;
 
 public class ModConfig {
+//    public static final boolean DEBUG = Boolean.getBoolean("debug"); // -Ddebug=true
+
+    public static final boolean DEBUG = true;
+
     public static boolean always_update = false;
 
     public static boolean scrollbar = true;
