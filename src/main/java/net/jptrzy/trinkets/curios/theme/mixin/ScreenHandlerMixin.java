@@ -1,9 +1,18 @@
 package net.jptrzy.trinkets.curios.theme.mixin;
 
+import dev.emi.trinkets.TrinketPlayerScreenHandler;
 import dev.emi.trinkets.TrinketSlot;
+import dev.emi.trinkets.api.TrinketComponent;
+import dev.emi.trinkets.api.TrinketInventory;
+import dev.emi.trinkets.api.TrinketsApi;
+import me.shedaniel.autoconfig.AutoConfig;
 import net.jptrzy.trinkets.curios.theme.Client;
+import net.jptrzy.trinkets.curios.theme.config.AutoConfigManager;
 import net.jptrzy.trinkets.curios.theme.config.ModConfig;
+import net.jptrzy.trinkets.curios.theme.config.ModConfigData;
+import net.jptrzy.trinkets.curios.theme.integrations.ScoutUtils;
 import net.jptrzy.trinkets.curios.theme.interfaces.TCTPlayerScreenHandlerInterface;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -18,6 +27,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Map;
+import java.util.Optional;
 
 @Mixin(ScreenHandler.class)
 public abstract class ScreenHandlerMixin implements TCTPlayerScreenHandlerInterface {
@@ -50,7 +62,12 @@ public abstract class ScreenHandlerMixin implements TCTPlayerScreenHandlerInterf
             cir.setReturnValue(slot);
         }
 
+//        if (  ((ScreenHandler) (Object) this) instanceof TrinketPlayerScreenHandler) {
+//            Client.LOGGER.warn("WORKS {}", ((TrinketPlayerScreenHandler) (Object) this).trinkets$getTrinketSlotEnd() );
+//        }
+
         if(slot instanceof TrinketSlot){
+
             if(trinketSlotStart == -1 || trinketSlotStart >= slots.size()){
                 trinketSlotStart = slots.size();
                 trinketSlotInd = 0;
@@ -61,8 +78,30 @@ public abstract class ScreenHandlerMixin implements TCTPlayerScreenHandlerInterf
 
             trinketSlotInd++;
 
-            // TODO update it somewhere else, because it courses problems with index
-            Client.updateScrollbar(this.slots, this, 0F);
+//            TrinketsApi.getTrinketComponent(MinecraftClient.getInstance().player).ifPresent(trinkets -> {
+//                trinkets.getTrackingUpdates();
+//            });
+
+            Optional<TrinketComponent> trinkets = TrinketsApi.getTrinketComponent(MinecraftClient.getInstance().player);
+            // TODO sometimes trinkets isn't present
+            if(trinkets.isPresent() && !ModConfig.always_update){
+                int l = 1;
+                for (Map<String, TrinketInventory> key : trinkets.get().getInventory().values()) {
+                    l += key.size();
+                }
+                if ( l-trinketSlotInd <= 0 ) {
+                    if(l-trinketSlotInd < 0){
+                        Client.LOGGER.error("Something went wrong with counting trinkets slots, this shouldn't happened.");
+                    }
+                    if (Client.isScoutLoaded()) {
+                        setScoutEquipped(ScoutUtils.haveLeftSatchel(trinkets.get()));
+                    }
+                    Client.updateScrollbar(this.slots, this, 0F);
+                }
+            }else{
+                setScoutEquipped(Client.isScoutLoaded());
+                Client.updateScrollbar(this.slots, this, 0F);
+            }
         }
 
         cir.setReturnValue(slot);
@@ -90,5 +129,17 @@ public abstract class ScreenHandlerMixin implements TCTPlayerScreenHandlerInterf
     }
     @Override public void setScrollIndex(int index){
         this.scrollbarIndex = index;
+    }
+
+    @Unique public boolean scoutEquipped = false;
+//    @Override public boolean getScoutEquipped(){
+//        return this.scoutEquipped;
+//    }
+    @Override public void setScoutEquipped(boolean b){
+        this.scoutEquipped = b;
+
+        if (Client.isClothConfigLoaded()) {
+            AutoConfigManager.updateSize(b);
+        }
     }
 }

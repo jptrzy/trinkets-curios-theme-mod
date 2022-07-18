@@ -7,6 +7,8 @@ import net.jptrzy.trinkets.curios.theme.Client;
 
 @Config(name = Client.MOD_ID)
 public class ModConfigData implements ConfigData {
+    @ConfigEntry.Gui.PrefixText public static boolean always_update = false;
+
     public boolean scrollbar = true;
     @ConfigEntry.Gui.PrefixText public boolean scrolling_outside_boundary = false;
 

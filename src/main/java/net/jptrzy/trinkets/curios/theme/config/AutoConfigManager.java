@@ -36,19 +36,37 @@ public class AutoConfigManager {
     public static ActionResult reloadModConfig(@Nullable ConfigHolder<ModConfigData> manager, ModConfigData data){
         Client.LOGGER.info("Reload Config");
 
+        ModConfig.always_update = data.always_update;
+
         ModConfig.scrollbar = data.scrollbar;
         ModConfig.scrolling_outside_boundary = data.scrolling_outside_boundary;
 
         ModConfig.scout_auto_resize = data.scout_auto_resize;
 
-        if (Client.isScoutLoaded() && ModConfig.scout_auto_resize) {
-            ModConfig.max_height = 3;
-            ModConfig.min_width = 2;
-        } else {
-            ModConfig.max_height = data.max_height;
-            ModConfig.min_width = data.min_width;
-        }
+        ModConfig.max_height = data.max_height;
+        ModConfig.min_width = data.min_width;
+
+//        if (Client.isScoutLoaded() && ModConfig.scout_auto_resize) {
+//            ModConfig.max_height = 3;
+//            ModConfig.min_width = 2;
+//        } else {
+//            ModConfig.max_height = data.max_height;
+//            ModConfig.min_width = data.min_width;
+//        }
 
         return ActionResult.SUCCESS;
+    }
+
+    public static void updateSize(boolean scoutEquipped){
+        ModConfigData config = AutoConfig.getConfigHolder(ModConfigData.class).getConfig();
+        if (scoutEquipped && ModConfig.scout_auto_resize) {
+            ModConfig.max_height = 3;
+            if( config.min_width == 1 ) {
+                ModConfig.min_width = 2;
+            }
+        } else {
+            ModConfig.max_height = config.max_height;
+            ModConfig.min_width = config.min_width;
+        }
     }
 }

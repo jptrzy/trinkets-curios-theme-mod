@@ -16,6 +16,7 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+	mavenCentral()
 
 	maven {
 		name = "TerraformersMC"
@@ -31,6 +32,17 @@ repositories {
 	maven{
 		url = "https://maven.terraformersmc.com/releases/"
 	}
+	maven {
+		url "https://cursemaven.com"
+	}
+	maven {
+		url = "https://jitpack.io"
+	}
+}
+
+ext {
+	lwjglVersion = '3.3.1'
+	imguiVersion = '1.86.3'
 }
 
 dependencies {
@@ -49,6 +61,33 @@ dependencies {
 	}
 
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+	modCompileOnly "curse.maven:inventorio-491073:${project.inventorio_cf_version_id}"
+	modCompileOnly "curse.maven:scout-631922:${project.scout_cf_version_id}"
+
+
+	// IMGUI
+	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+	['', '-opengl', '-glfw'].each {
+		implementation "org.lwjgl:lwjgl$it:$lwjglVersion"
+//		implementation "org.lwjgl:lwjgl$it::natives-windows"
+		implementation "org.lwjgl:lwjgl$it::natives-linux"
+	}
+
+	implementation "io.github.spair:imgui-java-binding:$imguiVersion"
+	implementation "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
+
+//	implementation "io.github.spair:imgui-java-natives-windows:$imguiVersion"
+	implementation "io.github.spair:imgui-java-natives-linux:$imguiVersion"
+
+
+//	["gl", "glfw", "core"].each {
+//		implementation "com.github.kotlin-graphics.imgui:$it:v1.79"
+//	}
+//
+//	implementation "com.github.kotlin-graphics:uno-sdk:jdk8-SNAPSHOT"
+//	implementation "com.github.kotlin-graphics:glm:jdk8-SNAPSHOT"
+//	implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: '1.4.10'
 }
 
 processResources {

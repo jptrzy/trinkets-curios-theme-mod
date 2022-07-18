@@ -1,12 +1,19 @@
 {
   "text.autoconfig.trinkets-curios-theme.title": "Trinkets Curios Theme Options",
 
+  "text.autoconfig.trinkets-curios-theme.option.always_update": "Always Update",
+  "text.autoconfig.trinkets-curios-theme.option.always_update.@PrefixText": "This option might help with some mods, but isn't efficient.",
+
   "text.autoconfig.trinkets-curios-theme.option.scrollbar": "Scrollbar",
+
   "text.autoconfig.trinkets-curios-theme.option.scrolling_outside_boundary": "Scrolling Outside Boundary",
   "text.autoconfig.trinkets-curios-theme.option.scrolling_outside_boundary.@PrefixText": "Scrolling in any location in inventory outside trinkets slots.",
+
   "text.autoconfig.trinkets-curios-theme.option.max_height": "Max Height",
   "text.autoconfig.trinkets-curios-theme.option.min_width": "Min Width",
+
   "text.autoconfig.trinkets-curios-theme.option.min_width.@PrefixText": "Works only when scrollbar is enabled.",
+
   "text.autoconfig.trinkets-curios-theme.option.scout_auto_resize": "Scout Auto Resize",
   "text.autoconfig.trinkets-curios-theme.option.scout_auto_resize.@PrefixText": "Integration with Scout mod; automatically picks min_width and max_height."
 

@@ -4,11 +4,11 @@
   "package": "net.jptrzy.trinkets.curios.theme.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "CreativeTrinketSlotMixin",
     "InventoryScreenMixin",
     "ScreenHandlerMixin",
     "SurvivalTrinketSlotMixin",
-    "TrinketScreenManagerMixin",
-    "CreativeTrinketSlotMixin"
+    "TrinketScreenManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

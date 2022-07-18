@@ -89,7 +89,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     protected void onClick(boolean change){
         if(change){
             getTPC().setTrinketsShow(!getTPC().getTrinketsShow());
-//            Client.updateScrollbar(handler.slots, getTPC(), 0);
+            Client.updateScrollbar(handler.slots, getTPC(), 0);
         }
         (getTPC().getTrinketsShow()  ? trinketsShowButton : trinketsHideButton).visible = true;
         (getTPC().getTrinketsShow()  ? trinketsHideButton : trinketsShowButton).visible = false;
@@ -152,4 +152,12 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
             return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
         }
     }
+//
+//    @Inject(at = @At("RETURN"), method = "isClickOutsideBounds", cancellable = true)
+//    protected void isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button, CallbackInfoReturnable<Boolean> cir) {
+//        cir.setReturnValue(cir.getReturnValue() || !(
+//                getTPC().getTrinketsShow()  && !recipeBook.isOpen() &&
+//                Client.isScrolledInTrinkets(getTPC(), mouseX, mouseY, this.x, this.y)
+//        ));
+//    }
 }

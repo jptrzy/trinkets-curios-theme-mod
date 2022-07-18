@@ -1,25 +1,38 @@
 package net.jptrzy.trinkets.curios.theme;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.emi.trinkets.api.TrinketInventory;
+import dev.emi.trinkets.api.TrinketsApi;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.jptrzy.trinkets.curios.theme.config.AutoConfigManager;
 import net.jptrzy.trinkets.curios.theme.config.ModConfig;
+import net.jptrzy.trinkets.curios.theme.integrations.ScoutUtils;
 import net.jptrzy.trinkets.curios.theme.interfaces.TCTPlayerScreenHandlerInterface;
 import net.jptrzy.trinkets.curios.theme.interfaces.TCTSurvivalTrinketSlot;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
 
 import static java.lang.Math.min;
 
@@ -40,10 +53,21 @@ public class Client implements ClientModInitializer {
 			AutoConfigManager.setup();
 		}
 
-		if (Client.isScoutLoaded()) {
-			ModConfig.max_height = 3;
-			ModConfig.min_width = 2;
-		}
+		InitializeKeybinds();
+	}
+
+	public static KeyBinding toggleGuiKeybind;
+	private void InitializeKeybinds() {
+		toggleGuiKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.imguiexample.togglegui", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "key.imguiexample.utility"));
+
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			while (toggleGuiKeybind.wasPressed()) {
+				if (MinecraftClient.getInstance().player != null
+						&& MinecraftClient.getInstance().currentScreen == null) {
+					MinecraftClient.getInstance().setScreen(new ImguiScreen());
+				}
+			}
+		});
 	}
 
 	public static boolean isModLoaded(String modID) {
@@ -75,21 +99,22 @@ public class Client implements ClientModInitializer {
 			helper.drawTexture(matrices, x - 17 - i * 18, y + 18 * height + 16, 7, 51, 18, 7);
 		}
 
-		for (int i = 0; i < length; i++) {
-			//Inner border around each slot
-			if (width == 1 && i >= ModConfig.max_height) {
-				break;
-			}
-
-			if (isScrollbarVisable(length)) {
-				if (i >= ModConfig.min_width*ModConfig.max_height) {
-					break;
-				}
-				helper.drawTexture(matrices, x - 17 - (i % ModConfig.min_width) * 18, y + 18 * (i / ModConfig.min_width) + 16, 4, 4, 18, 18);
-			} else {
-				helper.drawTexture(matrices, x - 17 - (i / ModConfig.max_height) * 18, y + 18 * (i % ModConfig.max_height) + 16, 4, 4, 18, 18);
-			}
-		}
+//		for (int i = 0; i < length; i++) {
+//			//Inner border around each slot
+//			if (width == 1 && i >= ModConfig.max_height) {
+//				break;
+//			}
+//
+//			if (!isScrollbarVisable(length)) {
+//				if (i >= ModConfig.min_width*ModConfig.max_height) {
+//					break;
+//				}
+//				helper.drawTexture(matrices, x - 17 - (i % ModConfig.min_width) * 18, y + 18 * (i / ModConfig.min_width) + 16, 4, 4, 18, 18);
+//			} else {
+//				LOGGER.warn("TEST");
+//				helper.drawTexture(matrices, x - 17 - (i / ModConfig.max_height) * 18, y + 18 * (i % ModConfig.max_height) + 16, 4, 4, 18, 18);
+//			}
+//		}
 
 		if (!isScrollbarVisable(length)) {
 			for (int i = 0; i < height; i++) {
@@ -107,7 +132,7 @@ public class Client implements ClientModInitializer {
 		if(length > ModConfig.max_height) {
 			for (int i = length - tcp.getScrollIndex() * width; i < width * ModConfig.max_height; i++) {
 
-				if (isScrollbarVisable(length)) {
+				if (!isScrollbarVisable(length)) {
 					DrawableHelper.drawTexture(matrices, x - 17 - (i % ModConfig.min_width) * 18, y + 18 * (i / ModConfig.min_width) + 16, 0, 32, 18, 18, 64, 64);
 				} else {
 					DrawableHelper.drawTexture(matrices, x - 17 - (i / ModConfig.max_height) * 18, y + 18 * (i % ModConfig.max_height) + 16, 0, 32, 18, 18, 64, 64);
@@ -134,39 +159,24 @@ public class Client implements ClientModInitializer {
 
 	}
 
-	public static void updateScrollbar(DefaultedList<Slot> slots, TCTPlayerScreenHandlerInterface tcp, double amount){
+	/*
+	Update position and visibility of trinkets slots basing on current options.
+	 */
+	public static void updateSlots(DefaultedList<Slot> slots, TCTPlayerScreenHandlerInterface tcp){
+//		LOGGER.warn("UPDATE SLOTS");
+//		if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen handled) {
+//			LOGGER.warn("WORKS WORKS {}", handled.handler);
+//		}
 
-		//Reload position on config change
-		if(!ModConfig.scrollbar){
-			for (int i=0; i<tcp.getTrinketSlotInd(); i++) {
-				if (slots.size() <= tcp.getTrinketSlotStart() - 1 + i) {
-					LOGGER.error("WIT");
-					continue;
-				}
-				Slot slot = slots.get(tcp.getTrinketSlotStart() - 1 + i);
-
-				slot.x = -16 - (i/ModConfig.max_height) * 18;
-				slot.y = 17 + (i%ModConfig.max_height) * 18;
-
-				((TCTSurvivalTrinketSlot) slot).setEnabled(true);
+		int index = tcp.getScrollIndex() * ModConfig.min_width;
+		for (int i=0; i<tcp.getTrinketSlotInd(); i++) {
+			if (slots.size() <= tcp.getTrinketSlotStart() - 1 + i) {
+				LOGGER.error("WIT");
+				continue;
 			}
-		}else {
-			int l = MathHelper.ceil((float) tcp.getTrinketSlotInd() / ModConfig.min_width) - ModConfig.max_height;
-			if(l <= 0){
-				return;
-			}
+			Slot slot = slots.get(tcp.getTrinketSlotStart() - 1 + i);
 
-			int index =  MathHelper.clamp(tcp.getScrollIndex() - (int) amount, 0, l);
-			tcp.setScrollIndex(index);
-			index = index * ModConfig.min_width;
-
-			for (int i=0; i<tcp.getTrinketSlotInd(); i++) {
-				if (slots.size() <= tcp.getTrinketSlotStart() - 1 + i) {
-					LOGGER.error("WIT");
-					continue;
-				}
-				Slot slot = slots.get(tcp.getTrinketSlotStart() - 1 + i);
-
+			if (ModConfig.scrollbar) {
 				if (i >= index && i < index + ModConfig.max_height * ModConfig.min_width) {
 					((TCTSurvivalTrinketSlot) slot).setEnabled(true);
 					slot.x = -16 - ((i-index)%ModConfig.min_width) * 18;
@@ -174,10 +184,27 @@ public class Client implements ClientModInitializer {
 				}else{
 					((TCTSurvivalTrinketSlot) slot).setEnabled(false);
 				}
+			} else {
+				slot.x = -16 - (i / ModConfig.max_height) * 18;
+				slot.y = 17 + (i % ModConfig.max_height) * 18;
+				((TCTSurvivalTrinketSlot) slot).setEnabled(true);
 			}
 		}
-//
-//		 LOGGER.warn("UPDATE");
+	}
+
+	public static void updateScrollbar(DefaultedList<Slot> slots, TCTPlayerScreenHandlerInterface tcp, double amount){
+		if(ModConfig.scrollbar){
+			int l = MathHelper.ceil((float) tcp.getTrinketSlotInd() / ModConfig.min_width) - ModConfig.max_height;
+			int index;
+			if(l <= 0){
+				index = 0;
+			} else {
+				index =  MathHelper.clamp(tcp.getScrollIndex() - (int) amount, 0, l);
+			}
+			tcp.setScrollIndex(index);
+		}
+
+		updateSlots(slots, tcp);
 	}
 
 	public static boolean isClickInScrollbar(TCTPlayerScreenHandlerInterface tcp, double mouseX, double mouseY, int x, int y) {
