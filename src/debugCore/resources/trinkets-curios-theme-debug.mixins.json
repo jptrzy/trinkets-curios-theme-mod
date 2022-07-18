@@ -4,15 +4,9 @@
   "package": "net.jptrzy.trinkets.curios.theme.debug.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "CreativeTrinketSlotMixin",
-    "ScreenHandlerMixin",
-    "SurvivalTrinketSlotMixin",
-    "TrinketScreenManagerMixin"
+    "ScreenDebugMode"
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixins": [
-    "HandledScreenMixin"
-  ]
+  }
 }

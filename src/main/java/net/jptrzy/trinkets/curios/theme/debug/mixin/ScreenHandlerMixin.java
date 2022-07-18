@@ -1,15 +1,12 @@
-package net.jptrzy.trinkets.curios.theme.mixin;
+package net.jptrzy.trinkets.curios.theme.debug.mixin;
 
-import dev.emi.trinkets.TrinketPlayerScreenHandler;
 import dev.emi.trinkets.TrinketSlot;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketInventory;
 import dev.emi.trinkets.api.TrinketsApi;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.jptrzy.trinkets.curios.theme.Client;
 import net.jptrzy.trinkets.curios.theme.config.AutoConfigManager;
 import net.jptrzy.trinkets.curios.theme.config.ModConfig;
-import net.jptrzy.trinkets.curios.theme.config.ModConfigData;
 import net.jptrzy.trinkets.curios.theme.integrations.ScoutUtils;
 import net.jptrzy.trinkets.curios.theme.interfaces.TCTPlayerScreenHandlerInterface;
 import net.minecraft.client.MinecraftClient;

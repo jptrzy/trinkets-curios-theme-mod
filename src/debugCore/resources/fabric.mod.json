@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "trinkets-curios-theme-debug",
+  "version": "<♾️>",
+
+  "name": "Trinkets Curios Theme Debug",
+  "description": "Debug Mod",
+  "authors": [
+    "jptrzy"
+  ],
+  "license": "LGPL-3.0",
+
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "net.jptrzy.trinkets.curios.theme.debug.DebugClient"
+    ]
+  },
+  "mixins": [
+    "trinkets-curios-theme-debug.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.6",
+    "fabric": "*",
+    "minecraft": "~1.19",
+    "java": ">=17",
+    "trinkets" : ">=3.4.0",
+    "trinkets-curios-theme" : "*"
+  },
+  "recommends": {},
+  "custom": {
+    "modmenu:parent": "trinkets-curios-theme"
+  }
+}

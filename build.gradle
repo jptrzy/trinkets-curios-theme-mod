@@ -45,6 +45,13 @@ ext {
 	imguiVersion = '1.86.3'
 }
 
+sourceSets {
+	debugCore {
+		compileClasspath += main.compileClasspath
+		runtimeClasspath += main.runtimeClasspath
+	}
+}
+
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -90,6 +97,8 @@ dependencies {
 //	implementation "com.github.kotlin-graphics:uno-sdk:jdk8-SNAPSHOT"
 //	implementation "com.github.kotlin-graphics:glm:jdk8-SNAPSHOT"
 //	implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: '1.4.10'
+
+	debugCoreImplementation sourceSets.main.output
 }
 
 processResources {

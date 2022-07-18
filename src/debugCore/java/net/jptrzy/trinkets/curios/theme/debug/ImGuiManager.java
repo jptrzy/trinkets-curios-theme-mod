@@ -1,4 +1,4 @@
-package net.jptrzy.trinkets.curios.theme;
+package net.jptrzy.trinkets.curios.theme.debug;
 
 import imgui.ImGui;
 import imgui.ImGuiIO;

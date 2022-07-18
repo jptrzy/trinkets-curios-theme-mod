@@ -1,4 +1,4 @@
-package net.jptrzy.trinkets.curios.theme.mixin;
+package net.jptrzy.trinkets.curios.theme.debug.mixin;
 
 import dev.emi.trinkets.TrinketSlot;
 import net.jptrzy.trinkets.curios.theme.Client;

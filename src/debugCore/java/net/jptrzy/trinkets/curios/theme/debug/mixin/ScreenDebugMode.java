@@ -1,6 +1,6 @@
-package net.jptrzy.trinkets.curios.theme.mixin;
+package net.jptrzy.trinkets.curios.theme.debug.mixin;
 
-import net.jptrzy.trinkets.curios.theme.ImGuiManager;
+import net.jptrzy.trinkets.curios.theme.debug.ImGuiManager;
 import net.jptrzy.trinkets.curios.theme.config.ModConfig;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -14,8 +14,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Objects;
 
 @Mixin(HandledScreen.class)
 public abstract class ScreenDebugMode<T extends ScreenHandler> extends Screen implements ScreenHandlerProvider<T> {

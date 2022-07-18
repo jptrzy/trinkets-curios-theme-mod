@@ -1,4 +1,4 @@
-package net.jptrzy.trinkets.curios.theme.mixin;
+package net.jptrzy.trinkets.curios.theme.debug.mixin;
 
 import dev.emi.trinkets.TrinketSlot;
 import net.jptrzy.trinkets.curios.theme.Client;
@@ -11,7 +11,6 @@ import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.math.MathHelper;

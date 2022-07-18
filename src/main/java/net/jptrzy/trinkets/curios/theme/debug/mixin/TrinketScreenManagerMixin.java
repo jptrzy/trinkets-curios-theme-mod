@@ -1,4 +1,4 @@
-package net.jptrzy.trinkets.curios.theme.mixin;
+package net.jptrzy.trinkets.curios.theme.debug.mixin;
 
 import dev.emi.trinkets.TrinketScreen;
 import dev.emi.trinkets.TrinketScreenManager;
