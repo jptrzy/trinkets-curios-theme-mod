@@ -6,7 +6,7 @@ It make Trinkets mod look like Curios mod.
 <details>
 <summary>More</summary>
 
-![Player Inventory Preview]()
+![Player Inventory Preview](https://raw.githubusercontent.com/jptrzy/trinkets-curios-theme-mod/1.19/images/preview.png)
 
 </details>
 
