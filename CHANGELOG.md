@@ -14,5 +14,6 @@
 ## 0.2.0
 * Scrollbar
 * Config Screen / Settings
-* Scout & ModMenu Integrations
+* REI & Scout & ModMenu Integrations
+* ImGUI in debug mode
 

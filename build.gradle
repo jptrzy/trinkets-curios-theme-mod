@@ -71,6 +71,9 @@ dependencies {
 //	modCompileOnly "curse.maven:inventorio-491073:${project.inventorio_cf_version_id}"
 	modCompileOnly "curse.maven:scout-631922:${project.scout_cf_version_id}"
 
+	modCompileOnly "dev.emi:emi:${project.emi_version}"
+
+	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
 
 	// IMGUI
 
@@ -89,23 +92,46 @@ dependencies {
 //		implementation "io.github.spair:imgui-java-natives-windows:$imguiVersion"
 	implementation "io.github.spair:imgui-java-natives-linux:$imguiVersion"
 
-
-//	["gl", "glfw", "core"].each {
-//		implementation "com.github.kotlin-graphics.imgui:$it:v1.79"
-//	}
-//
-//	implementation "com.github.kotlin-graphics:uno-sdk:jdk8-SNAPSHOT"
-//	implementation "com.github.kotlin-graphics:glm:jdk8-SNAPSHOT"
-//	implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: '1.4.10'
-
 	debugCoreImplementation sourceSets.main.output
 }
 
 processResources {
+//	System.out.println("TEST")
+//
+//	String[] options = [
+//			'version',
+//			'loader_version',
+//			'fabric_version',
+//			'trinkets_version'
+//	];
+//	Map<String, String> options_exp = new HashMap<String, String>();
+//
+//	System.out.println("TEST %s", "test")
+//
+//	System.out.println("TEST2")
+//
+//	options.each {
+//
+//		inputs.property("$it", project.getByName("$it"))
+//		options_exp.put("$it", project.getByName("$it"))
+//	}
+//
+//	filesMatching("fabric.mod.json") {
+//		expand(options_exp)
+//	}
+
+	inputs.property "loader_version", project.loader_version
+	inputs.property "fabric_version", project.fabric_version
+	inputs.property "trinkets_version", project.trinkets_version
 	inputs.property "version", project.version
 
 	filesMatching("fabric.mod.json") {
-		expand "version": project.version
+		expand(
+				"loader_version": project.loader_version,
+				"fabric_version": project.fabric_version,
+				"trinkets_version": project.trinkets_version,
+				"version": project.version
+		)
 	}
 }
 

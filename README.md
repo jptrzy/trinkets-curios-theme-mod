@@ -22,3 +22,7 @@ It make Trinkets mod look like Curios mod.
 * [ClothConfig2](https://modrinth.com/mod/9s6osm5g)
 * [ModMenu](https://modrinth.com/mod/mOgUt4GM)
 * [Scout](https://modrinth.com/mod/QRYqnI15)
+* [REI](https://modrinth.com/mod/nfn13YXA)
+* [EMI](https://modrinth.com/mod/nfn13YXA) (Isn't fully working with effects)
+
+

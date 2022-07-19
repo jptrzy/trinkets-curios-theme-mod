@@ -1,6 +1,8 @@
 package net.jptrzy.trinkets.curios.theme;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.emi.emi.api.widget.Bounds;
+import me.shedaniel.math.Rectangle;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.jptrzy.trinkets.curios.theme.config.AutoConfigManager;
@@ -55,6 +57,8 @@ public class Client implements ClientModInitializer {
 	public static void drawbackground(DrawableHelper helper, int x, int y, MatrixStack matrices, TCTPlayerScreenHandlerInterface tcp) {
 		int length = tcp.getTrinketSlotInd();
 
+
+
 //		LOGGER.warn("length {}", length);
 
 		RenderSystem.setShaderTexture(0, MORE_SLOTS);
@@ -63,7 +67,12 @@ public class Client implements ClientModInitializer {
 		if (ModConfig.scrollbar) {
 			width = ModConfig.min_width;
 		}
-		int height = Math.min(length, ModConfig.max_height);
+		int height = Math.min(MathHelper.ceil((float) length/ModConfig.min_width), ModConfig.max_height);
+
+		if (length < 1) {
+			height = 0;
+			width = 0;
+		}
 
 		for (int i = 0; i < width; i++) {
 			//Top && Bottom
@@ -101,10 +110,8 @@ public class Client implements ClientModInitializer {
 
 		RenderSystem.setShaderTexture(0, SOCIAL_INTERACTIONS_TEXTURE);
 
-		if(length > ModConfig.max_height) {
-			for (int i = 0; i < width * ModConfig.max_height; i++) {
-				DrawableHelper.drawTexture(matrices, x - 17 - (i % ModConfig.min_width) * 18, y + 18 * (i / ModConfig.min_width) + 16, 0, 32, 18, 18, 64, 64);
-			}
+		for (int i = 0; i < width * height; i++) {
+			DrawableHelper.drawTexture(matrices, x - 17 - (i % width) * 18, y + 18 * (i / width) + 16, 0, 32, 18, 18, 64, 64);
 		}
 
 		if (isScrollbarVisable(length)) {
@@ -186,15 +193,30 @@ public class Client implements ClientModInitializer {
 	}
 
 	public static boolean isScrolledInTrinkets(TCTPlayerScreenHandlerInterface tcp, double mouseX, double mouseY, int x, int y) {
+		if (ModConfig.scrolling_outside_boundary) {
+			return true;
+		}
+
 		int h = MathHelper.ceil((float) tcp.getTrinketSlotInd() / ModConfig.min_width)
 				- ModConfig.max_height > 0 ? ModConfig.max_height : tcp.getTrinketSlotInd();
 		x -= 8 + 18 * ModConfig.min_width ;
 		y += 10;
 		int xx = x + 9 + 18 * ModConfig.min_width;
 		int yy = y + 14 + 18 * h;
-		return (mouseX >= (double)x && mouseY >= (double)y && mouseX < (double)xx && mouseY < (double)yy) || ModConfig.scrolling_outside_boundary;
+		return (mouseX >= (double)x && mouseY >= (double)y && mouseX < (double)xx && mouseY < (double)yy);
 	}
 	public static boolean isScrollbarVisable(int length){
 		return ModConfig.scrollbar &&  MathHelper.ceil((float) length / ModConfig.min_width) > ModConfig.max_height;
+	}
+
+	public static Rectangle getTCTRectangle(TCTPlayerScreenHandlerInterface tcp, int x, int y){
+		int ih = MathHelper.ceil((float) tcp.getTrinketSlotInd() / ModConfig.min_width)
+				- ModConfig.max_height > 0 ? ModConfig.max_height : tcp.getTrinketSlotInd();
+		x -= 8 + 18 * ModConfig.min_width ;
+		y += 10;
+		int w = 9 + 18 * ModConfig.min_width;
+		int h = 14 + 18 * ih;
+
+		return new Rectangle(x, y, w, h);
 	}
 }

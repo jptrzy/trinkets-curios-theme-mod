@@ -64,11 +64,12 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     // Unique func
 
     protected RecipeBookWidget getBook(){
-        return ((RecipeBookProvider) (Object) this).getRecipeBookWidget();
+        return ((InventoryScreen) (Object) this).getRecipeBookWidget();
     }
 
     protected boolean isRecipeBookOpen(){
-        return correct && ((HandledScreen) (Object) this) instanceof RecipeBookProvider && getBook().isOpen();
+
+        return correct && getBook().isOpen();
     }
 
     protected void updateButtonsPos(){
@@ -104,16 +105,17 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
         if ( !correct ) { return; }
 
-        this.trinketsShowButton = this.addDrawableChild(new TexturedButtonWidget(0, 0 , 12, 12, 0, 0, 12, Client.SOCIAL_INTERACTIONS_TEXTURE, 64, 64, this::onButtonClick));
-        this.trinketsHideButton = this.addDrawableChild(new TexturedButtonWidget(0, 0, 12, 12, 12, 0, 12, Client.SOCIAL_INTERACTIONS_TEXTURE, 64, 64, this::onButtonClick));
+        this.trinketsShowButton = this.addSelectableChild(new TexturedButtonWidget(0, 0 , 12, 12, 0, 0, 12, Client.SOCIAL_INTERACTIONS_TEXTURE, 64, 64, this::onButtonClick));
+        this.trinketsHideButton = this.addSelectableChild(new TexturedButtonWidget(0, 0, 12, 12, 12, 0, 12, Client.SOCIAL_INTERACTIONS_TEXTURE, 64, 64, this::onButtonClick));
 
         updateButtonsPos();
         onButtonClick(false);
 
-        if (isRecipeBookOpen()) {
-            setEnableButton(trinketsShowButton, false);
-            setEnableButton(trinketsShowButton, false);
-        }
+        // Don't work because recipeBook is initialised later.
+//        if (isRecipeBookOpen()) {
+//            setEnableButton(trinketsShowButton, false);
+//            setEnableButton(trinketsHideButton, false);
+//        }
 
         Client.updateScrollbar(handler.slots, getTPC(), 0f);
     }
@@ -126,26 +128,33 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (!correct) { return; }
 
-        if (!isRecipeBookOpen() && getTPC().getTrinketsShow()) {
-            Client.drawbackground(this, this.x, this.y, matrices, getTPC());
+        if (!isRecipeBookOpen()) {
+            trinketsShowButton.render(matrices, mouseX, mouseY, delta);
+            trinketsHideButton.render(matrices, mouseX, mouseY, delta);
+
+            if (getTPC().getTrinketsShow()) {
+                Client.drawbackground(this, this.x, this.y, matrices, getTPC());
+            }
         }
+
+
     }
 
     @Inject(method="mouseClicked", at = @At("HEAD"))
     public void H_mouseClick(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         if (!correct) { return; }
 
-        wasRecipeBookOpen = getBook().isOpen();
+        wasRecipeBookOpen = isRecipeBookOpen();
     }
 
     @Inject(method="mouseClicked", at = @At("TAIL"))
     public void T_mouseClick(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         if (!correct) { return; }
 
-        if (wasRecipeBookOpen != getBook().isOpen()) {
-            if (getBook().isOpen()) {
+        if (wasRecipeBookOpen != isRecipeBookOpen()) {
+            if (isRecipeBookOpen()) {
                 setEnableButton(trinketsShowButton, false);
-                setEnableButton(trinketsShowButton, false);
+                setEnableButton(trinketsHideButton, false);
             } else {
                 updateButtonsPos();
                 onButtonClick(false);
@@ -157,13 +166,13 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     protected void drawSlot(MatrixStack matrices, Slot slot, CallbackInfo ci) {
         if (!correct) { return; }
 
-        if (getBook().isOpen() && getTPC().getTrinketsShow() && slot instanceof TrinketSlot) {
+        if (isRecipeBookOpen() && getTPC().getTrinketsShow() && slot instanceof TrinketSlot) {
             ci.cancel();
         }
     }
 
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        if (!correct || !ModConfig.scrollbar || getBook().isOpen() || !getTPC().getTrinketsShow() ||
+        if (!correct || !ModConfig.scrollbar || isRecipeBookOpen() || !getTPC().getTrinketsShow() ||
                 !Client.isScrolledInTrinkets(getTPC(), mouseX, mouseY, this.x, this.y)) {
             return super.mouseScrolled(mouseX, mouseY, amount);
         }
