@@ -34,11 +34,8 @@ public abstract class ScreenHandlerMixin implements TCTPlayerScreenHandlerInterf
 
     @Unique protected int trinketSlotStart = -1;
     @Unique public int trinketSlotInd = 0;
-
     @Unique public int scrollbarIndex = 0;
-
     @Unique public Boolean trinketsShow = true;
-
     @Final @Shadow public DefaultedList<Slot> slots;
 
     @Shadow

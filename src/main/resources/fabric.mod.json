@@ -27,7 +27,7 @@
     "emi": [
       "net.jptrzy.trinkets.curios.theme.integrations.EMIIntegration"
     ],
-    "rei": [
+    "rei_client": [
       "net.jptrzy.trinkets.curios.theme.integrations.REIIntegration"
     ]
   },
@@ -47,5 +47,8 @@
     "scout" : "*",
     "modmenu" : "*",
     "cloth-config2" : "*"
+  },
+  "conflicts": {
+    "carpet-shadow" : "*"
   }
 }

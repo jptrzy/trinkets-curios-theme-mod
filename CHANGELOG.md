@@ -20,3 +20,5 @@
 ## 0.2.1
 * Repair Scout overlapping gui bug
 
+## 0.2.2
+* Repair REI initialization (#6)
