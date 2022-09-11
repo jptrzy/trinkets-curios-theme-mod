@@ -29,6 +29,7 @@ public class Client implements ClientModInitializer {
 
 	public static void check(HandledScreen h) {
 		Client.LOGGER.warn("Check {}", h instanceof InventoryScreen);
+		
 	}
 
 	@Override

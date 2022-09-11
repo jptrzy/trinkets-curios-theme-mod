@@ -17,3 +17,6 @@
 * REI & Scout & ModMenu Integrations
 * ImGUI in debug mode
 
+## 0.2.1
+* Repair Scout overlapping gui bug
+
